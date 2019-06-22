@@ -1,7 +1,8 @@
-class taskbot {
+class Taskbot {
 
     constructor(token, name) {
         const SlackBot = require('slackbots');
+
         const params = {
             icon_emoji: ':smiley:'
         };
@@ -27,5 +28,7 @@ class taskbot {
             console.log(data.text);
         });
     }
+
+    getSlackID(){}
 }
  module.exports = taskbot;

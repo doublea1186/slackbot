@@ -1,15 +1,9 @@
 class TPData {
-     // user_name;
-     // user_id;
-     // user_email;
-     // slack_id;
 
-
-    constructor() {
-        this.user_name = '';
-        this.user_id = '';
-        this.user_email = '';
-        this.slack_id = '';
+    constructor(name, email, id) {
+        this.user_name = name;
+        this.user_id = id;
+        this.user_email = email;
     }
 
     user_created(){ //function that gets alerted when a new Target Process user is made
