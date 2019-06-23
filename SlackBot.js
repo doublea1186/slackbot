@@ -1,6 +1,10 @@
 class Taskbot {
 
+
     constructor(token, name) {
+        const clientID = '';
+        const clientSecret = '';
+        
         const SlackBot = require('slackbots');
 
         const params = {

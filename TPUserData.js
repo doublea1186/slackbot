@@ -1,4 +1,4 @@
-class TPData {
+class TPUserData {
 
     constructor(name, email, id) {
         this.user_name = name;
@@ -41,4 +41,4 @@ class TPData {
     }
 }
 
-module.exports = TPData;
+module.exports = TPUserData;
