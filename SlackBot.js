@@ -1,38 +1,51 @@
+const response = require("request");
+const {WebClient} = require('@slack/web-api');
+
 class Taskbot {
 
-
     constructor(token, name) {
-        const clientID = '';
-        const clientSecret = '';
-        
+
         const SlackBot = require('slackbots');
 
         const params = {
             icon_emoji: ':smiley:'
         };
-        const bot = new SlackBot({
+        this.bot = new SlackBot({
             token: token,
             name: name
         });
 
-         //start handler
-            bot.on('start', () => {
-                bot.postMessageToChannel('general', 'hi', params);
-            });
+        //start handler
+        this.bot.on('start', () => {
+            this.bot.postMessageToChannel('general', 'hi', params);
+        });
 
 
         //error handler
-            bot.on('error', (err) => console.log(err));
+        this.bot.on('error', (err) => console.log(err));
 
-            //message handler
-        bot.on('message', (data) =>{
-            if (data.type !== 'message'){
+        //message handler
+        this.bot.on('message', (data) => {
+            if (data.type !== 'message') {
                 return;
             }
             console.log(data.text);
         });
     }
 
-    getSlackID(){}
+    getSlackID(email) { //function that finds slack id based off of the passed email parameter
+        const web = new WebClient(process.env.BOT_TOKEN);
+        (async () => {
+        let response = await web.users.lookupByEmail({'email': email});
+        console.log(response.user.id);
+        })();
+        return response;
+    }
+
+    sendSlackID(email){ //after finding the slack ID, maps it back to Target Process in the custom field
+        this.getSlackID(email);
+    }
+
 }
- module.exports = taskbot;
+
+module.exports = Taskbot;

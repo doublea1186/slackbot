@@ -5,7 +5,7 @@ class TPProjectData{
         this.id = id;
     }
 
-    dataRecieved(){
+    static dataRecieved(){
         console.log('Project has been created and data has been received');
     }
 
@@ -21,6 +21,7 @@ class TPProjectData{
     getID(){
         return this.id;
     }
+
 }
 
 module.exports = TPProjectData;
