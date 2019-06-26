@@ -18,17 +18,17 @@ app.listen(process.env.PORT || 8080);
 // Creates the endpoint at the /slack path for our webhook when a new user is created and finds the associated slack ID
 app.post('/slack', (req, res) => {
     console.log(req.body);
-    let user = new tpUser(req.body.EntityName, 'ockster1186@gmail.com', req.body.EntityID);
+    let user = new tpUser(req.body.EntityName, 'ockster1186@gmail.com', parseInt(req.body.EntityID));
     user.user_created();
     user.getTPData();
     let id_bot = new bot(process.env.BOT_TOKEN, process.env.BOT_NAME);
 
-        try {
-            user.setID(id_bot.getSlackID(user.getEmail()));
-        } catch (error) {
-            console.log(error);
-        }
-        // Returns a '200 OK' response to all requests
+    try {
+        user.setID(id_bot.sendSlackID(user.getID(), user.getEmail()));
+    } catch (error) {
+        console.log(error);
+    }
+    // Returns a '200 OK' response to all requests
     res.sendStatus(200);
 });
 
@@ -49,4 +49,3 @@ app.get('/harvest', (req, res) => {
     res.send('This is the Harvest endpoint');
 
 });
-

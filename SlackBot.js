@@ -1,4 +1,4 @@
-const response = require("request");
+const request = require("request");
 const {WebClient} = require('@slack/web-api');
 
 class Taskbot {
@@ -23,28 +23,50 @@ class Taskbot {
 
         //error handler
         this.bot.on('error', (err) => console.log(err));
-
-        //message handler
-        this.bot.on('message', (data) => {
-            if (data.type !== 'message') {
-                return;
-            }
-            console.log(data.text);
-        });
     }
 
-    getSlackID(email) { //function that finds slack id based off of the passed email parameter
+    sendSlackID(user_id, email) { //function that finds slack id based off of the passed email parameter
         const web = new WebClient(process.env.BOT_TOKEN);
         (async () => {
-        let response = await web.users.lookupByEmail({'email': email});
-        console.log(response.user.id);
+            let response = await web.users.lookupByEmail({'email': email});
+            console.log(response.user.id);
+             let sID = response.user.id;
+             console.log("we got this far " + sID );
+
+            if (sID !== undefined) {
+                request.post(process.env.TP_URL_SLACK, {
+                    json: {
+                        id: user_id,
+                        slack_id: sID
+                    }
+                }, (error, res, body) => {
+                    if (error) {
+                        console.error(error);
+                        return
+                    }
+                    console.log(`statusCode: ${res.statusCode}`);
+                    console.log(body)
+                })
+            }
         })();
-        return response;
     }
 
-    sendSlackID(email){ //after finding the slack ID, maps it back to Target Process in the custom field
-        this.getSlackID(email);
+    sendHarvestID(project_id, hID){
+        request.post(process.env.TP_URL_HARVEST, {
+            json: {
+                id: project_id,
+                harvest_id: hID
+            }
+        }, (error, res, body) => {
+            if (error) {
+                console.error(error);
+                return
+            }
+            console.log(`statusCode: ${res.statusCode}`);
+            console.log(body)
+        })
     }
+
 
 }
 
