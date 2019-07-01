@@ -44,7 +44,7 @@ app.post('/harvest', (req, res) => {  //webhook endpoint for when a new project 
     let id_bot = new bot(process.env.BOT_TOKEN, process.env.BOT_NAME);
 
     try {
-        project.setID(id_bot.sendHarvestID(project.getID(), 'WorldDomination'));
+        project.setID(id_bot.sendHarvestID(project.getID(), project.getName()));
     } catch (error) {
         console.log(error);
     }
