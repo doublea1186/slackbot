@@ -17,6 +17,7 @@
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
     "ngrok": "^3.2.0",
+    "node-harvest-api": "^1.0.6",
     "request": "^2.88.0",
     "slack": "^11.0.2",
     "slack-node": "^0.1.8",

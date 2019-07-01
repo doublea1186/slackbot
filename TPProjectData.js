@@ -5,8 +5,8 @@ class TPProjectData{
         this.id = id;
     }
 
-    static dataRecieved(){
-        console.log('Project has been created and data has been received');
+    dataReceived() {
+        console.log('Project has been created and data has been received \n Name: ' + this.name + "\n ID: " + this.id);
     }
 
     setName(name){
