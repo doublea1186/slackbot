@@ -14,13 +14,17 @@ app.get('/', (req, res) => {
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 8080);
 
-
 // Creates the endpoint at the /slack path for our webhook when a new user is created and finds the associated slack ID
 app.post('/slack', (req, res) => {
+
     console.log(req.body);
+
     let user = new tpUser(req.body.EntityName, req.body.EntityEmail, parseInt(req.body.EntityID));
+
     user.user_created();
+
     user.getTPData();
+
     let id_bot = new bot(process.env.BOT_TOKEN, process.env.BOT_NAME);
 
     try {
@@ -32,11 +36,9 @@ app.post('/slack', (req, res) => {
     res.sendStatus(200);
 });
 
-
 app.get('/slack', (req, res) => {  //creates the page I think
     res.send('This is the Slack endpoint');
 });
-
 
 app.post('/harvest', (req, res) => {  //webhook endpoint for when a new project is created and sends an http post request
     let project = new tpProject(req.body.ProjectName, req.body.ProjectID);
@@ -44,9 +46,9 @@ app.post('/harvest', (req, res) => {  //webhook endpoint for when a new project 
     let id_bot = new bot(process.env.BOT_TOKEN, process.env.BOT_NAME);
 
     try {
-        project.setID(id_bot.sendHarvestID(project.getID(), project.getName()));
+        project.setID(id_bot.sendHarvestID(project.getID, project.getName()));
     } catch (error) {
-        console.log(error);
+        console.log("There was an error " + error);
     }
     res.sendStatus(200);
 });

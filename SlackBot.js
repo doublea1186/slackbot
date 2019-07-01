@@ -1,6 +1,6 @@
 const Request = require("request");
 const {WebClient} = require('@slack/web-api');
-const Harvest = require('node-harvest-api')
+const Harvest = require('node-harvest-api');
 
 class Taskbot {
 
@@ -27,21 +27,29 @@ class Taskbot {
     }
 
     sendSlackID(user_id, email) { //function that finds slack id based off of the passed email parameter
+
         const web = new WebClient(process.env.BOT_TOKEN);
+
         (async () => {  //async function to get data from slack API
+
             let response = await web.users.lookupByEmail({'email': email});
+
             let sID = response.user.id;
+
             if (sID !== undefined) {  //sends the data if the username has been successfully received
+
                 Request.post(process.env.TP_URL_SLACK, {
                     json: {
-                        id: user_id,
+                        id: parseInt(user_id),
                         slack_id: sID
                     }
+
                 }, (error, res, body) => {
                     if (error) {
                         console.error(error);
                         return
                     }
+
                     console.log(`statusCode: ${res.statusCode}`);
                     console.log(body)
                 })
@@ -56,29 +64,32 @@ class Taskbot {
     }
 
     sendHarvestID(project_id, project_name) { //similar function to sendSlackID expect its used for harvest
+
         const harvest = new Harvest(process.env.HARVEST_ACCOUNT_ID, process.env.HARVEST_TOKEN, process.env.HARVEST_APP_NAME); //necessary fields for the Harvest API
+
         (async () => { //async function that gets the available projects
+
             let projects = await harvest.projects.all();
 
             for (let i = 0; i < projects.length; i++) { //currently the best way to cycle through the projects in order to find a project with a similar name
                 //can cause problems in the future if the project list gets too big (maybe find a better way to do this??)
                 console.log(this.equalizeString(projects[i].name) + ' ==? ' + this.equalizeString(project_name));
-                if (this.equalizeString(projects[i].name) == this.equalizeString(project_name)) { //gets rid of capitalization and whitespace in order to best compare the two strings
-                    this.hID = projects[i].name;
 
+                if (this.equalizeString(projects[i].name) === this.equalizeString(project_name)) { //gets rid of capitalization and whitespace in order to best compare the two strings
+                    this.hID = projects[i].name;
                     Request.post(process.env.TP_URL_HARVEST, { //if the names match it sends the data to the custom webhook in target process
                             json: {
                                 id: parseInt(project_id),
-                                harvest_id: parseInt(this.hID)  //must return an int due to Target Process rules
+                                harvest_id: this.hID  //must return an int due to Target Process rules
                             }
                         },
+
                         (error, res, body) => {
                             if (error) {
                                 console.error(error);
                                 return
                             }
                             console.log(`statusCode: ${res.statusCode}`);
-                            console.log(body);
                         })
 
                 } else { //if no names match then the project is not defined in harvest
@@ -87,7 +98,6 @@ class Taskbot {
             }
         })();
     }
-
 
 }
 

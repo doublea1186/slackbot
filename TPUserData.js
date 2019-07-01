@@ -27,6 +27,7 @@ class TPUserData {
     getSlackID(){
         return this.user_email;
     }
+
     setName(name){
         this.name = name;
     }
@@ -39,6 +40,7 @@ class TPUserData {
     setSlackID(slackID){
         this.slack_id = slackID;
     }
+
 }
 
 module.exports = TPUserData;
