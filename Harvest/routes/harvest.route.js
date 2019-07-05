@@ -2,21 +2,9 @@ require('dotenv').config({path: require('find-config')('.env')}); //loads data f
 const reqlib = require('app-root-path').require;
 const tpProject = reqlib('Harvest/api/harvest.api.TPProjectData.js');
 const harvestAPI = reqlib('Harvest/api/harvest.api.js');
-const express = require('express'); //node express web API
-const bodyParser = require('body-parser'); //parses the post request
-const app = express().use(bodyParser.json()); // creates express http server
 
-//startServer();
 
-function startRoute() {
-
-// // Home page route.
-//     app.get('/', (req, res) => {
-//         res.send('This is the tunnel created by Ngrok with Http Auth');
-//     });
-//
-// // Sets server port and logs message on success
-//     app.listen(process.env.PORT || 8080);
+function startRoute(app) {
 
     app.post('/harvest', (req, res) => {  //webhook endpoint for when a new project is created and sends an http post request
         console.log('hello');
@@ -38,9 +26,6 @@ function startRoute() {
     });
 }
 
-// function closeServer() {
-//     process.kill(process.pid, 'SIGTERM');
-// }
 
 module.exports = {
     startRoute: startRoute

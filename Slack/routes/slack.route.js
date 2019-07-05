@@ -2,21 +2,10 @@ require('dotenv').config({path: require('find-config')('.env')}); //loads data f
 const reqlib = require('app-root-path').require;
 const slackAPI = reqlib('Slack/api/slack.api.js');
 const tpUser = reqlib('Slack/api/slack.api.TPUserData.js');
-const express = require('express'); //node express web API
-const bodyParser = require('body-parser'); //parses the post request
-const app = express().use(bodyParser.json()); // creates express http server
 
-//startServer();
 
-function startRoute() {
+function startRoute(app) {
 
-// // Home page route.
-//     app.get('/', (req, res) => {
-//         res.send('This is the tunnel created by Ngrok with Http Auth');
-//     });
-//
-// // Sets server port and logs message on success
-//     app.listen(process.env.PORT || 8080);
 
 // Creates the endpoint at the /slack path for our webhook when a new user is created and finds the associated slack ID
     app.post('/slack', (req, res) => {

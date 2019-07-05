@@ -13,5 +13,5 @@ app.get('/', (req, res) => {
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 8080);
 
-slack.startRoute();
-harvest.startRoute();
+slack.startRoute(app); //sets up routes to the slack endpoint
+harvest.startRoute(app); //sets up routes to the harvest endpoint
