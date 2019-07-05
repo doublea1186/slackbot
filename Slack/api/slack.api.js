@@ -13,8 +13,6 @@ let sendSlackID = async function sendSlackID(user_id, email) { //function that f
 
         let sID = response.user.id;
 
-        console.log(sID);
-
         if (sID !== undefined) {  //sends the data if the username has been successfully received
 
             Request.post(process.env.TP_URL_SLACK, {
@@ -25,7 +23,6 @@ let sendSlackID = async function sendSlackID(user_id, email) { //function that f
 
             }, (error, res,) => {
                 if (error) {
-                    console.error(error);
                     return;
                 }
             })

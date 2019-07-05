@@ -7,14 +7,14 @@ const harvestAPI = reqlib('Harvest/api/harvest.api.js');
 function startRoute(app) {
 
     app.post('/harvest', (req, res) => {  //webhook endpoint for when a new project is created and sends an http post request
-        console.log('hello');
-        let project = new tpProject("world domination", req.body.ProjectID);
-        // project.dataReceived();
+        let project = new tpProject(req.body.ProjectName, req.body.ProjectID);
 
         try {
+
             project.setID(harvestAPI.sendHarvestID(project.getID(), project.getName()));
+
         } catch (error) {
-            console.log("There was an error " + error);
+
         }
 
         res.sendStatus(200);
@@ -26,8 +26,6 @@ function startRoute(app) {
     });
 }
 
-
 module.exports = {
     startRoute: startRoute
-    //  closeServer: closeServer
 };
