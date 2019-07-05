@@ -1,6 +1,6 @@
-class TPProjectData{
+class TPProjectData {
 
-    constructor(name, id){
+    constructor(name, id) {
         this.name = name;
         this.id = id;
     }
@@ -9,17 +9,19 @@ class TPProjectData{
         console.log('Project has been created and data has been received \n Name: ' + this.name + "\n ID: " + this.id);
     }
 
-    setName(name){
+    setName(name) {
         this.name = name;
     }
-    setID(id){
+
+    setID(id) {
         this.id = id;
     }
 
-    getName(){
+    getName() {
         return this.name;
     }
-    getID(){
+
+    getID() {
         return this.id;
     }
 
