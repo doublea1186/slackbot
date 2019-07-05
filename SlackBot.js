@@ -76,7 +76,7 @@ class Taskbot {
                 console.log(this.equalizeString(projects[i].name) + ' ==? ' + this.equalizeString(project_name));
 
                 if (this.equalizeString(projects[i].name) === this.equalizeString(project_name)) { //gets rid of capitalization and whitespace in order to best compare the two strings
-                    this.hID = projects[i].name;
+                    this.hID = projects[i].id;
                     Request.post(process.env.TP_URL_HARVEST, { //if the names match it sends the data to the custom webhook in target process
                             json: {
                                 id: parseInt(project_id),
