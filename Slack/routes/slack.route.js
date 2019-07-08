@@ -2,6 +2,7 @@ require('dotenv').config({path: require('find-config')('.env')}); //loads data f
 const reqlib = require('app-root-path').require;
 const slackAPI = reqlib('Slack/api/slack.api.js');
 const tpUser = reqlib('Slack/api/slack.api.TPUserData.js');
+const controller = reqlib('Slack/controller/slack.controller.js');
 
 
 function startRoute(app) {
@@ -9,15 +10,11 @@ function startRoute(app) {
 // Creates the endpoint at the /slack path for our webhook when a new user is created and finds the associated slack ID
     app.post('/slack', (req, res) => {
 
-        let user = new tpUser(req.body.EntityName, req.body.EntityEmail, parseInt(req.body.EntityID));
+        controller.startController(req, res);
 
-        try {
-            user.setID(slackAPI.sendSlackID(user.getID(), user.getEmail()));
-        } catch (error) {
-
-        }
         // Returns a '200 OK' response to all requests
         res.sendStatus(200);
+
     });
 
     app.get('/slack', (req, res) => {  //creates the page I think

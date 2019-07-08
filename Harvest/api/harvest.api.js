@@ -41,6 +41,7 @@ function sendHarvestID(project_id, project_name) { //similar function to sendSla
 }
 
 //helper functions
+
 function findProject(projects, project_name) {
     for (let i = 0; i < projects.length; i++) { //currently the best way to cycle through the projects in order to find a project with a similar name
         //can cause problems in the future if the project list gets too big (maybe find a better way to do this??)
@@ -61,4 +62,4 @@ function equalizeString(str) { //makes checking for project names easier bc it r
 
 module.exports = {
     sendHarvestID: sendHarvestID
-}
+};
