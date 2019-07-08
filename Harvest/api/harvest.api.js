@@ -1,6 +1,7 @@
-require('dotenv').config({path: require('find-config')('.env')}); //loads data from environment file
-const Request = require("request");
-const Harvest = require('node-harvest-api');
+require('dotenv').config(); //loads data from environment file
+import  {post}  from "request";
+import Harvest from 'node-harvest-api'
+
 
 //main function
 function sendHarvestID(project_id, project_name) { //similar function to sendSlackID expect its used for harvest
@@ -15,7 +16,7 @@ function sendHarvestID(project_id, project_name) { //similar function to sendSla
 
         if (hID !== null) { //gets rid of capitalization and whitespace in order to best compare the two strings
 
-            Request.post(process.env.TP_URL_HARVEST, { //if the names match it sends the data to the custom webhook in target process
+            post(process.env.TP_URL_HARVEST, { //if the names match it sends the data to the custom webhook in target process
 
                     json: {
                         id: parseInt(project_id),
@@ -60,6 +61,4 @@ function equalizeString(str) { //makes checking for project names easier bc it r
     }).replace(/\s/g, "").toLowerCase();
 }
 
-module.exports = {
-    sendHarvestID: sendHarvestID
-};
+export const sendHarvestID = sendHarvestID;

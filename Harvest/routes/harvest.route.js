@@ -1,8 +1,8 @@
 require('dotenv').config({path: require('find-config')('.env')}); //loads data from environment file
-const reqlib = require('app-root-path').require;
-const tpProject = reqlib('Harvest/api/harvest.api.TPProjectData.js');
-const harvestAPI = reqlib('Harvest/api/harvest.api.js');
-const harvestController = reqlib('Harvest/controller/harvest.controller.js');
+import { require as reqlib } from 'app-root-path';
+import tpProject from 'Harvest/api/harvest.api.TPProjectData.js';
+import harvestAPI from 'Harvest/api/harvest.api.js';
+import harvestController from 'Harvest/controller/harvest.controller.js';
 
 
 function startRoute(app) {
@@ -20,6 +20,4 @@ function startRoute(app) {
     });
 }
 
-module.exports = {
-    startRoute: startRoute
-};
+export const startRoute = startRoute;

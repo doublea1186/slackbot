@@ -1,6 +1,6 @@
 require('dotenv').config({path: require('find-config')('.env')}); //loads data from environment file
-const Request = require("request");
-const {WebClient} = require('@slack/web-api');
+import { post } from "request";
+import { WebClient } from '@slack/web-api';
 
 //main function
 let sendSlackID = async function sendSlackID(user_id, email) { //function that finds slack id based off of the passed email parameter
@@ -15,7 +15,7 @@ let sendSlackID = async function sendSlackID(user_id, email) { //function that f
 
         if (sID !== undefined) {  //sends the data if the username has been successfully received
 
-            Request.post(process.env.TP_URL_SLACK, {
+            post(process.env.TP_URL_SLACK, {
                 json: {
                     id: parseInt(user_id),
                     slack_id: sID
@@ -31,8 +31,6 @@ let sendSlackID = async function sendSlackID(user_id, email) { //function that f
 }
 
 
-module.exports = {
-    sendSlackID: sendSlackID
-};
+export const sendSlackID = sendSlackID;
 
 

@@ -1,4 +1,4 @@
-module.exports = class TPUserData {
+export default class TPUserData {
 
     constructor(name, email, id) {
         this.user_name = name;

@@ -1,7 +1,7 @@
 require('dotenv').config({path: require('find-config')('.env')}); //loads data from environment file
-const reqlib = require('app-root-path').require;
-const slackAPI = reqlib('Slack/api/slack.api.js');
-const tpUser = reqlib('Slack/api/slack.api.TPUserData.js');
+import { require as reqlib } from 'app-root-path';
+import slackAPI from 'Slack/api/slack.api.js';
+import tpUser from 'Slack/api/slack.api.TPUserData.js';
 
 function startController(req, res) {
 
@@ -17,6 +17,4 @@ function startController(req, res) {
 
 }
 
-module.exports = {
-    startController: startController
-};
+export const startController = startController;

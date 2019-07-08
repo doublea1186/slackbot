@@ -1,7 +1,6 @@
-require('dotenv').config({path: require('find-config')('.env')}); //loads data from environment file
-const reqlib = require('app-root-path').require;
-const tpProject = reqlib('Harvest/api/harvest.api.TPProjectData.js');
-const harvestAPI = reqlib('Harvest/api/harvest.api.js');
+require('dotenv').config(); //loads data from environment file
+import harvestAPI from 'Harvest\api\harvest.api.js';
+import tpProject from 'Harvest\api\harvest.api.TPProjectData.js';
 
 function startController(req, res) {
 
@@ -16,6 +15,4 @@ function startController(req, res) {
     }
 }
 
-module.exports = {
-    startController: startController
-};
+export const startController;
