@@ -1,4 +1,4 @@
-module.exports = class TPUserData {
+class TPData {
 
     constructor(name, email, id) {
         this.user_name = name;
@@ -6,7 +6,7 @@ module.exports = class TPUserData {
         this.user_email = email;
     }
 
-    user_created() { //function that gets alerted when a new Target Process user is made
+    user_created(){ //function that gets alerted when a new Target Process user is made
         console.log('New Target Process user made');
     }
 
@@ -15,37 +15,30 @@ module.exports = class TPUserData {
         console.log('data has been recieved \n name: ' + this.user_name + ' \n user_id: ' + this.user_id + '\n user email: ' + this.user_email);
     }
 
-    getName() {
+    getName(){
         return this.user_name;
     }
-
-    getID() {
+    getID(){
         return this.user_id;
     }
-
-    getEmail() {
+    getEmail(){
         return this.user_email;
     }
-
-    getSlackID() {
+    getSlackID(){
         return this.user_email;
     }
-
     setName(name){
         this.name = name;
     }
-
-    setID(ID) {
+    setID(ID){
         this.user_id = ID;
     }
-
-    setEmail(email) {
+    setEmail(email){
         this.user_email = email;
     }
-
-    setSlackID(slackID) {
+    setSlackID(slackID){
         this.slack_id = slackID;
     }
-
 }
 
+module.exports = TPData;

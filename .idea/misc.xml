@@ -5,6 +5,5 @@
   </component>
   <component name="ProjectPlainTextFileTypeManager">
     <file url="file://$PROJECT_DIR$/.env" />
-    <file url="file://$PROJECT_DIR$/Slack/api/.env" />
   </component>
 </project>
