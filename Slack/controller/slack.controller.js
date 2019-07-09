@@ -11,7 +11,7 @@ function startController (req, res) {
   sendSlackID(req.body.EntityID, 'ockster1186@gmail.com')
 }
 
-function sendSlackID (userID, email) {
+async function sendSlackID (userID, email) {
   // function that finds slack id based off of the passed email parameter
   const web = new WebClient(process.env.BOT_TOKEN);
 
@@ -22,6 +22,7 @@ function sendSlackID (userID, email) {
     let sID = response.user.id
     if (sID !== undefined) {
       // sends the data if the username has been successfully received
+      console.log('whats up')
       Request.post(process.env.TP_URL_SLACK, {
         json: {
           id: parseInt(userID),

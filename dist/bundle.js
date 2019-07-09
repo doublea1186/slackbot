@@ -86,87 +86,6 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./Harvest/api/harvest.api.js":
-/*!************************************!*\
-  !*** ./Harvest/api/harvest.api.js ***!
-  \************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var request__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! request */ "./node_modules/request/index.js");
-/* harmony import */ var request__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(request__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var node_harvest_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! node-harvest-api */ "./node_modules/node-harvest-api/index.js");
-/* harmony import */ var node_harvest_api__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(node_harvest_api__WEBPACK_IMPORTED_MODULE_1__);
-
-
-__webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config() // loads data from environment file
-
-// main function
-function sayhello () {
-  console.log('hello')
-}
-
-function sendHarvestID (projectId, projectName) { // similar function to sendSlackID expect its used for harvest
-  const harvest = new node_harvest_api__WEBPACK_IMPORTED_MODULE_1___default.a(process.env.HARVEST_ACCOUNT_ID, process.env.HARVEST_TOKEN, process.env.HARVEST_APP_NAME); // necessary fields for the Harvest API
-
-  (async () => {
-    // async function that gets the available projects
-    let projects = await harvest.projects.all()
-
-    let hID = findProject(projects, projectName)
-
-    if (hID !== null) { // gets rid of capitalization and whitespace in order to best compare the two strings
-      request__WEBPACK_IMPORTED_MODULE_0___default()(process.env.TP_URL_HARVEST, { // if the names match it sends the data to the custom webhook in target process
-
-        json: {
-          id: parseInt(projectId),
-          harvest_id: hID // must return an int due to Target Process rules
-        }
-      },
-
-      (error, res) => {
-        if (error) {
-          console.error(error)
-          return
-        }
-        console.log(`statusCode: ${res.statusCode}`)
-      })
-    } else { // if no names match then the project is not defined in harvest
-      console.log('project was not defined in harvest')
-    }
-  })()
-}
-
-// helper functions
-
-function findProject (projects, projectName) {
-  for (let i = 0; i < projects.length; i++) { // currently the best way to cycle through the projects in order to find a project with a similar name
-    // can cause problems in the future if the project list gets too big (maybe find a better way to do this??)
-
-    if (equalizeString(projects[i].name) === equalizeString(projectName)) {
-      return projects[i].id
-    } else {
-      return null
-    }
-  }
-}
-
-function equalizeString (str) { // makes checking for project names easier bc it replaces all whitespace and capitalization
-  return str.replace(/\w\S*/g, function (txt) {
-    return txt.charAt(0).toUpperCase() + txt.substr(1)
-  }).replace(/\s/g, '').toLowerCase()
-}
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  sendHarvestID,
-  sayhello
-});
-
-
-/***/ }),
-
 /***/ "./Harvest/controller/harvest.controller.js":
 /*!**************************************************!*\
   !*** ./Harvest/controller/harvest.controller.js ***!
@@ -191,13 +110,15 @@ function startController (req, res) {
 
   }
 }
-function sendHarvestID (projectId, projectName) {
+async function sendHarvestID (projectId, projectName) {
   const harvest = new node_harvest_api__WEBPACK_IMPORTED_MODULE_0___default.a(process.env.HARVEST_ACCOUNT_ID, process.env.HARVEST_TOKEN, process.env.HARVEST_APP_NAME); // necessary fields for the Harvest API
 
   (async () => { // async function that gets the available projects
     let projects = await harvest.projects.all()
 
-    let hID = findProject(projects, projectName)
+    let hID = findProject(projects, projectName).id
+
+    console.log(hID)
 
     if (hID !== null) { // gets rid of capitalization and whitespace in order to best compare the two strings
       request__WEBPACK_IMPORTED_MODULE_1___default.a.post(process.env.TP_URL_HARVEST, { // if the names match it sends the data to the custom webhook in target process
@@ -219,17 +140,8 @@ function sendHarvestID (projectId, projectName) {
     }
   })()
 }
-
 function findProject (projects, projectName) {
-  for (let i = 0; i < projects.length; i++) { // currently the best way to cycle through the projects in order to find a project with a similar name
-    // can cause problems in the future if the project list gets too big (maybe find a better way to do this??)
-
-    if (equalizeString(projects[i].name) === equalizeString(projectName)) {
-      return projects[i].id
-    } else {
-      return null
-    }
-  }
+  return projects.find(project => equalizeString(project.name) === equalizeString(projectName))
 }
 
 function equalizeString (string) {
@@ -304,7 +216,7 @@ function startController (req, res) {
   sendSlackID(req.body.EntityID, 'ockster1186@gmail.com')
 }
 
-function sendSlackID (userID, email) {
+async function sendSlackID (userID, email) {
   // function that finds slack id based off of the passed email parameter
   const web = new _slack_web_api__WEBPACK_IMPORTED_MODULE_1__["WebClient"](process.env.BOT_TOKEN);
 
@@ -315,6 +227,7 @@ function sendSlackID (userID, email) {
     let sID = response.user.id
     if (sID !== undefined) {
       // sends the data if the username has been successfully received
+      console.log('whats up')
       request__WEBPACK_IMPORTED_MODULE_0___default.a.post(process.env.TP_URL_SLACK, {
         json: {
           id: parseInt(userID),
@@ -389,16 +302,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var body_parser__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(body_parser__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _Slack_routes_slack_route_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Slack/routes/slack.route.js */ "./Slack/routes/slack.route.js");
 /* harmony import */ var _Harvest_routes_harvest_route_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Harvest/routes/harvest.route.js */ "./Harvest/routes/harvest.route.js");
-/* harmony import */ var _Harvest_api_harvest_api_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Harvest/api/harvest.api.js */ "./Harvest/api/harvest.api.js");
  // node express web API
  // parses the post request
 
 
-
 const app = express__WEBPACK_IMPORTED_MODULE_0___default()().use(Object(body_parser__WEBPACK_IMPORTED_MODULE_1__["json"])()) // creates express http
 __webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config() // loads data from environment file
-
-_Harvest_api_harvest_api_js__WEBPACK_IMPORTED_MODULE_4__["default"].sayhello()
 
 // Home page route.
 app.get('/', (req, res) => {
@@ -407,8 +316,6 @@ app.get('/', (req, res) => {
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 8080)
-// app.use('/harvest', harvest)
-
 _Slack_routes_slack_route_js__WEBPACK_IMPORTED_MODULE_2__["default"].startRoute(app) // sets up routes to the slack endpoint
 _Harvest_routes_harvest_route_js__WEBPACK_IMPORTED_MODULE_3__["default"].startRoute(app) // sets up routes to the harvest endpoint
 
