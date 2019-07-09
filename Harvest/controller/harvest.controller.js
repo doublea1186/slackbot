@@ -1,10 +1,10 @@
-import Harvest from 'node_modules/node-harvest-api'
-import post from 'node_modules/request'
+import Harvest from 'node-harvest-api'
+import Request from 'request'
 require('dotenv').config() // loads data from environment file
 
 function startController (req, res) {
   try {
-    sendHarvestID(req.body.ProjectID, req.body.ProjectName)
+    sendHarvestID(req.body.ProjectID, 'world domination')
   } catch (error) {
 
   }
@@ -18,8 +18,7 @@ function sendHarvestID (projectId, projectName) {
     let hID = findProject(projects, projectName)
 
     if (hID !== null) { // gets rid of capitalization and whitespace in order to best compare the two strings
-      post(process.env.TP_URL_HARVEST, { // if the names match it sends the data to the custom webhook in target process
-
+      Request.post(process.env.TP_URL_HARVEST, { // if the names match it sends the data to the custom webhook in target process
         json: {
           id: parseInt(projectId),
           harvest_id: hID // must return an int due to Target Process rules
@@ -31,7 +30,7 @@ function sendHarvestID (projectId, projectName) {
           console.error(error)
           return
         }
-        console.log(`statusCode: ${res.statusCode}`)
+        console.log(`statusCode error: ${res.statusCode}`)
       })
     } else { // if no names match then the project is not defined in harvest
       console.log('project was not defined in harvest')
@@ -58,4 +57,6 @@ function equalizeString (string) {
     .toLowerCase() // For readability and clean structure. This line will go over the 100 char line max base off of eslint standards.
 }
 
-export default startController
+export default {
+  startController
+}

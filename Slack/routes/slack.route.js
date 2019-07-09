@@ -1,10 +1,10 @@
-import controller from 'Slack/controller/slack.controller.js'
+import slackController from './../../Slack/controller/slack.controller.js'
 require('dotenv').config() // loads data from environment file
 
 function startRoute (app) {
   // Creates the endpoint at the /slack path for our webhook when a new user is created and finds the associated slack ID
   app.post('/slack', (req, res) => {
-    controller.startController(req, res)
+    slackController.startController(req, res)
 
     // Returns a '200 OK' response to all requests
     res.sendStatus(200)
@@ -15,4 +15,6 @@ function startRoute (app) {
   })
 }
 
-export default startRoute
+export default {
+  startRoute
+}

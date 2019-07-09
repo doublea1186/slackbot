@@ -1,7 +1,8 @@
 const path = require('path')
+
 module.exports = {
   mode: 'development',
-  entry: path.resolve(__dirname, './app.js'),
+  entry: path.resolve(__dirname, 'index.js'),
   watch: true,
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -9,6 +10,7 @@ module.exports = {
     filename: 'bundle.js',
     chunkFilename: '[name].js'
   },
+  target: 'node',
   node: {
     fs: 'empty',
     net: 'empty',
@@ -42,7 +44,6 @@ module.exports = {
   devServer: {
     contentBase: path.join('/dist/'),
     inline: true,
-    host: '0.0.0.0',
     port: 8080
   }
 }

@@ -1,4 +1,4 @@
-import harvestController from 'Harvest/controller/harvest.controller.js'
+import harvestController from './../../Harvest/controller/harvest.controller.js'
 require('dotenv').config() // loads data from environment file
 
 function startRoute (app) {
@@ -13,4 +13,6 @@ function startRoute (app) {
   })
 }
 
-export default startRoute
+export default {
+  startRoute
+}

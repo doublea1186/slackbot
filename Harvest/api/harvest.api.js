@@ -3,12 +3,15 @@ import Harvest from 'node-harvest-api'
 require('dotenv').config() // loads data from environment file
 
 // main function
-console.log('hello')
+function sayhello () {
+  console.log('hello')
+}
 
 function sendHarvestID (projectId, projectName) { // similar function to sendSlackID expect its used for harvest
   const harvest = new Harvest(process.env.HARVEST_ACCOUNT_ID, process.env.HARVEST_TOKEN, process.env.HARVEST_APP_NAME); // necessary fields for the Harvest API
 
-  (async () => { // async function that gets the available projects
+  (async () => {
+    // async function that gets the available projects
     let projects = await harvest.projects.all()
 
     let hID = findProject(projects, projectName)
@@ -55,4 +58,7 @@ function equalizeString (str) { // makes checking for project names easier bc it
   }).replace(/\s/g, '').toLowerCase()
 }
 
-export default sendHarvestID
+export default {
+  sendHarvestID,
+  sayhello
+}
