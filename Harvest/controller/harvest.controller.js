@@ -4,7 +4,7 @@ require('dotenv').config() // loads data from environment file
 
 function startController (req, res) {
   try {
-    sendHarvestID(req.body.ProjectID, 'world domination')
+    sendHarvestID(req.body.ProjectID, req.body.ProjectName)
   } catch (error) {
 
   }
@@ -16,8 +16,6 @@ async function sendHarvestID (projectId, projectName) {
     let projects = await harvest.projects.all()
 
     let hID = findProject(projects, projectName).id
-
-    console.log(hID)
 
     if (hID !== null) { // gets rid of capitalization and whitespace in order to best compare the two strings
       Request.post(process.env.TP_URL_HARVEST, { // if the names match it sends the data to the custom webhook in target process
@@ -32,10 +30,9 @@ async function sendHarvestID (projectId, projectName) {
           console.error(error)
           return
         }
-        console.log(`statusCode error: ${res.statusCode}`)
+        console.log(`statusCode: ${res.statusCode}`)
       })
     } else { // if no names match then the project is not defined in harvest
-      console.log('project was not defined in harvest')
     }
   })()
 }

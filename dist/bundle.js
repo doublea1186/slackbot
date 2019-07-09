@@ -105,7 +105,7 @@ __webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config() 
 
 function startController (req, res) {
   try {
-    sendHarvestID(req.body.ProjectID, 'world domination')
+    sendHarvestID(req.body.ProjectID, req.body.ProjectName)
   } catch (error) {
 
   }
@@ -117,8 +117,6 @@ async function sendHarvestID (projectId, projectName) {
     let projects = await harvest.projects.all()
 
     let hID = findProject(projects, projectName).id
-
-    console.log(hID)
 
     if (hID !== null) { // gets rid of capitalization and whitespace in order to best compare the two strings
       request__WEBPACK_IMPORTED_MODULE_1___default.a.post(process.env.TP_URL_HARVEST, { // if the names match it sends the data to the custom webhook in target process
@@ -133,10 +131,9 @@ async function sendHarvestID (projectId, projectName) {
           console.error(error)
           return
         }
-        console.log(`statusCode error: ${res.statusCode}`)
+        console.log(`statusCode: ${res.statusCode}`)
       })
     } else { // if no names match then the project is not defined in harvest
-      console.log('project was not defined in harvest')
     }
   })()
 }
@@ -168,24 +165,24 @@ function equalizeString (string) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Harvest_controller_harvest_controller_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../../Harvest/controller/harvest.controller.js */ "./Harvest/controller/harvest.controller.js");
+/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! express */ "./node_modules/express/index.js");
+/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_1__);
+
 
 __webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config() // loads data from environment file
+let router = express__WEBPACK_IMPORTED_MODULE_1___default.a.Router()
 
-function startRoute (app) {
-  app.post('/harvest', (req, res) => { // webhook endpoint for when a new project is created and sends an http post request
-    _Harvest_controller_harvest_controller_js__WEBPACK_IMPORTED_MODULE_0__["default"].startController(req, req)
+router.post('/', (req, res) => { // webhook endpoint for when a new project is created and sends an http post request
+  _Harvest_controller_harvest_controller_js__WEBPACK_IMPORTED_MODULE_0__["default"].startController(req, req)
 
-    res.sendStatus(200)
-  })
+  res.sendStatus(200)
+})
 
-  app.get('/harvest', (req, res) => {
-    res.send('This is the Harvest endpoint')
-  })
-}
+router.get('/', (req, res) => {
+  res.send('This is the Harvest endpoint')
+})
 
-/* harmony default export */ __webpack_exports__["default"] = ({
-  startRoute
-});
+/* harmony default export */ __webpack_exports__["default"] = (router);
 
 
 /***/ }),
@@ -209,9 +206,8 @@ __webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config() 
 
 function startController (req, res) {
   try {
-    sendSlackID(req.body.EntityID, 'ockster1186@gmail.com')
+    sendSlackID(req.body.EntityID, req.body.EntityEmail)
   } catch (error) {
-    console.log('did not work')
   }
   sendSlackID(req.body.EntityID, 'ockster1186@gmail.com')
 }
@@ -227,7 +223,6 @@ async function sendSlackID (userID, email) {
     let sID = response.user.id
     if (sID !== undefined) {
       // sends the data if the username has been successfully received
-      console.log('whats up')
       request__WEBPACK_IMPORTED_MODULE_0___default.a.post(process.env.TP_URL_SLACK, {
         json: {
           id: parseInt(userID),
@@ -263,26 +258,26 @@ async function sendSlackID (userID, email) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Slack_controller_slack_controller_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../../Slack/controller/slack.controller.js */ "./Slack/controller/slack.controller.js");
+/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! express */ "./node_modules/express/index.js");
+/* harmony import */ var express__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_1__);
+
 
 __webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config() // loads data from environment file
+let router = express__WEBPACK_IMPORTED_MODULE_1___default.a.Router()
 
-function startRoute (app) {
-  // Creates the endpoint at the /slack path for our webhook when a new user is created and finds the associated slack ID
-  app.post('/slack', (req, res) => {
-    _Slack_controller_slack_controller_js__WEBPACK_IMPORTED_MODULE_0__["default"].startController(req, res)
+// Creates the endpoint at the /slack path for our webhook when a new user is created and finds the associated slack ID
+router.post('/', (req, res) => {
+  _Slack_controller_slack_controller_js__WEBPACK_IMPORTED_MODULE_0__["default"].startController(req, res)
 
-    // Returns a '200 OK' response to all requests
-    res.sendStatus(200)
-  })
+  // Returns a '200 OK' response to all requests
+  res.sendStatus(200)
+})
 
-  app.get('/slack', (req, res) => { // creates the page I think
-    res.send('This is the Slack endpoint')
-  })
-}
+router.get('/', (req, res) => { // creates the page I think
+  res.send('This is the Slack endpoint')
+})
 
-/* harmony default export */ __webpack_exports__["default"] = ({
-  startRoute
-});
+/* harmony default export */ __webpack_exports__["default"] = (router);
 
 
 /***/ }),
@@ -316,11 +311,8 @@ app.get('/', (req, res) => {
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 8080)
-_Slack_routes_slack_route_js__WEBPACK_IMPORTED_MODULE_2__["default"].startRoute(app) // sets up routes to the slack endpoint
-_Harvest_routes_harvest_route_js__WEBPACK_IMPORTED_MODULE_3__["default"].startRoute(app) // sets up routes to the harvest endpoint
-
-// app.use('/slack', slack)
-// app.use('/harvest', harvest)
+app.use('/harvest', _Harvest_routes_harvest_route_js__WEBPACK_IMPORTED_MODULE_3__["default"])
+app.use('/slack', _Slack_routes_slack_route_js__WEBPACK_IMPORTED_MODULE_2__["default"])
 
 
 /***/ }),

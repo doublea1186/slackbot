@@ -4,9 +4,8 @@ require('dotenv').config() // loads data from environment file
 
 function startController (req, res) {
   try {
-    sendSlackID(req.body.EntityID, 'ockster1186@gmail.com')
+    sendSlackID(req.body.EntityID, req.body.EntityEmail)
   } catch (error) {
-    console.log('did not work')
   }
   sendSlackID(req.body.EntityID, 'ockster1186@gmail.com')
 }
@@ -22,7 +21,6 @@ async function sendSlackID (userID, email) {
     let sID = response.user.id
     if (sID !== undefined) {
       // sends the data if the username has been successfully received
-      console.log('whats up')
       Request.post(process.env.TP_URL_SLACK, {
         json: {
           id: parseInt(userID),
