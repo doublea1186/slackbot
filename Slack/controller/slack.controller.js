@@ -1,5 +1,5 @@
 import Request from 'request'
-import WebClient from '@slack/web-api'
+import { WebClient } from '@slack/web-api'
 require('dotenv').config() // loads data from environment file
 
 function startController (req, res) {
@@ -20,7 +20,6 @@ function sendSlackID (userID, email) {
     let response = await web.users.lookupByEmail({ 'email': email })
 
     let sID = response.user.id
-    console.log(sID)
     if (sID !== undefined) {
       // sends the data if the username has been successfully received
       Request.post(process.env.TP_URL_SLACK, {
@@ -37,7 +36,6 @@ function sendSlackID (userID, email) {
         console.log(`statusCode: ${res.statusCode}`)
       })
     } else {
-      console.log('no users found')
     }
   })()
 }

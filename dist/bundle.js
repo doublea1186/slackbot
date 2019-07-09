@@ -306,14 +306,13 @@ function startController (req, res) {
 
 function sendSlackID (userID, email) {
   // function that finds slack id based off of the passed email parameter
-  const web = new _slack_web_api__WEBPACK_IMPORTED_MODULE_1___default.a(process.env.BOT_TOKEN);
+  const web = new _slack_web_api__WEBPACK_IMPORTED_MODULE_1__["WebClient"](process.env.BOT_TOKEN);
 
   (async () => {
     // async function to get data from slack API
     let response = await web.users.lookupByEmail({ 'email': email })
 
     let sID = response.user.id
-    console.log(sID)
     if (sID !== undefined) {
       // sends the data if the username has been successfully received
       request__WEBPACK_IMPORTED_MODULE_0___default.a.post(process.env.TP_URL_SLACK, {
@@ -330,7 +329,6 @@ function sendSlackID (userID, email) {
         console.log(`statusCode: ${res.statusCode}`)
       })
     } else {
-      console.log('no users found')
     }
   })()
 }
