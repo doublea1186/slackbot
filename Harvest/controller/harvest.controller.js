@@ -3,28 +3,33 @@ import HarvestAPI from '../../Harvest/api/harvest.api.js';
 require('dotenv').config(); // loads data from environment file
 
 function startController (req, res) {
-  return sendHarvestID(req.body.ProjectID, req.body.ProjectName);
+  return sendHarvestID(req.body.ProjectID, 'world domination');
 }
 
 async function sendHarvestID (projectId, projectName) {
-  let projects = await HarvestAPI.getProjects();
+  const projects = await HarvestAPI.getProjects();
 
-  let hID = findProject(projects, projectName).id;
+  if (projects) {
+    const hID = findProject(projects, projectName).id;
 
-  if (hID !== null) { // gets rid of capitalization and whitespace in order to best compare the two strings
-    Request.post(process.env.TP_URL_HARVEST, { // if the names match it sends the data to the custom webhook in target process
-      json: {
-        id: parseInt(projectId),
-        harvest_id: hID // must return an int due to Target Process rules
-      }
-    },
+    if (hID !== null) { // gets rid of capitalization and whitespace in order to best compare the two strings
+      Request.post(process.env.TP_URL_HARVEST, { // if the names match it sends the data to the custom webhook in target process
+        json: {
+          id: parseInt(projectId),
+          harvest_id: hID // must return an int due to Target Process rules
+        }
+      },
 
-    (error, res) => {
-      if (error) {
-        console.error(error);
-      }
-    });
-  } else { // if no names match then the project is not defined in harvest
+      (error, res) => {
+        if (error) {
+          console.error(error);
+          return error;
+        }
+        return res;
+      });
+    }
+  } else {
+    return Promise.reject(new Error('no projects found'));
   }
 }
 function findProject (projects, projectName) {

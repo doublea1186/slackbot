@@ -9,6 +9,7 @@ async function sendSlackID (userID, email) {
   // function that finds slack id based off of the passed email parameter
   let response = await SlackAPI.getUsers(email);
   let sID = response.user.id;
+
   if (sID !== undefined) {
     // sends the data if the username has been successfully received
     Request.post(process.env.TP_URL_SLACK, {
@@ -20,10 +21,11 @@ async function sendSlackID (userID, email) {
     (error, res) => {
       if (error) {
         console.error(error);
-        return;
       }
-      console.log(`statusCode: ${res.statusCode}`);
+      return res;
     });
+  } else {
+    return Promise.reject(new Error('no user found'));
   }
 }
 
