@@ -1,22 +1,33 @@
-require('dotenv').config({path: require('find-config')('.env')}); //loads data from environment file
-const reqlib = require('app-root-path').require;
-const slackAPI = reqlib('Slack/api/slack.api.js');
-const tpUser = reqlib('Slack/api/slack.api.TPUserData.js');
+import Request from 'request';
+import SlackAPI from '../../Slack/api/slack.api';
 
-function startController(req, res) {
-
-    let user = new tpUser(req.body.EntityName, req.body.EntityEmail, parseInt(req.body.EntityID));
-
-    try {
-
-        user.setID(slackAPI.sendSlackID(user.getID(), user.getEmail()));
-
-    } catch (error) {
-
-    }
-
+function startController (req, res) {
+  return sendSlackID(req.body.EntityID, req.body.EntityEmail);
 }
 
-module.exports = {
-    startController: startController
+async function sendSlackID (userID, email) {
+  // function that finds slack id based off of the passed email parameter
+  const response = await SlackAPI.getUsers(email);
+  const sID = response.user.id;
+
+  if (sID !== undefined) {
+    // sends the data if the username has been successfully received
+    Request.post(process.env.TP_URL_SLACK, {
+      json: {
+        id: parseInt(userID), 
+        slack_id: sID
+      }
+    },
+    (error, res) => {
+      if (error) {
+        console.error(error);
+        return error;
+      }
+      return res;
+    });
+  } return Promise.reject(new Error('no user found'));
+}
+
+export default {
+  startController
 };
