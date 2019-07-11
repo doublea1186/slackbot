@@ -86,6 +86,36 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./Harvest/api/harvest.api.js":
+/*!************************************!*\
+  !*** ./Harvest/api/harvest.api.js ***!
+  \************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var node_harvest_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! node-harvest-api */ "./node_modules/node-harvest-api/index.js");
+/* harmony import */ var node_harvest_api__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(node_harvest_api__WEBPACK_IMPORTED_MODULE_0__);
+
+__webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config();
+
+const harvest = new node_harvest_api__WEBPACK_IMPORTED_MODULE_0___default.a(process.env.HARVEST_ACCOUNT_ID, process.env.HARVEST_TOKEN, process.env.HARVEST_APP_NAME); // declare variable as a global so you can use it only once on each function
+
+async function getProjects () {
+  const harvestProjects = await harvest.projects.all()
+    .catch(error => error);
+
+  return harvestProjects;
+}
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  getProjects
+});
+
+
+/***/ }),
+
 /***/ "./Harvest/controller/harvest.controller.js":
 /*!**************************************************!*\
   !*** ./Harvest/controller/harvest.controller.js ***!
@@ -95,57 +125,47 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var node_harvest_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! node-harvest-api */ "./node_modules/node-harvest-api/index.js");
-/* harmony import */ var node_harvest_api__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(node_harvest_api__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var request__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! request */ "./node_modules/request/index.js");
-/* harmony import */ var request__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(request__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var request__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! request */ "./node_modules/request/index.js");
+/* harmony import */ var request__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(request__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Harvest_api_harvest_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Harvest/api/harvest.api.js */ "./Harvest/api/harvest.api.js");
 
 
-__webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config() // loads data from environment file
+__webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config(); // loads data from environment file
 
 function startController (req, res) {
-  try {
-    sendHarvestID(req.body.ProjectID, req.body.ProjectName)
-  } catch (error) {
+  return sendHarvestID(req.body.ProjectID, req.body.ProjectName);
+}
 
+async function sendHarvestID (projectId, projectName) {
+  let projects = await _Harvest_api_harvest_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].getProjects();
+
+  let hID = findProject(projects, projectName).id;
+
+  if (hID !== null) { // gets rid of capitalization and whitespace in order to best compare the two strings
+    request__WEBPACK_IMPORTED_MODULE_0___default.a.post(process.env.TP_URL_HARVEST, { // if the names match it sends the data to the custom webhook in target process
+      json: {
+        id: parseInt(projectId),
+        harvest_id: hID // must return an int due to Target Process rules
+      }
+    },
+
+    (error, res) => {
+      if (error) {
+        console.error(error);
+      }
+    });
+  } else { // if no names match then the project is not defined in harvest
   }
 }
-async function sendHarvestID (projectId, projectName) {
-  const harvest = new node_harvest_api__WEBPACK_IMPORTED_MODULE_0___default.a(process.env.HARVEST_ACCOUNT_ID, process.env.HARVEST_TOKEN, process.env.HARVEST_APP_NAME); // necessary fields for the Harvest API
-
-  (async () => { // async function that gets the available projects
-    let projects = await harvest.projects.all()
-
-    let hID = findProject(projects, projectName).id
-
-    if (hID !== null) { // gets rid of capitalization and whitespace in order to best compare the two strings
-      request__WEBPACK_IMPORTED_MODULE_1___default.a.post(process.env.TP_URL_HARVEST, { // if the names match it sends the data to the custom webhook in target process
-        json: {
-          id: parseInt(projectId),
-          harvest_id: hID // must return an int due to Target Process rules
-        }
-      },
-
-      (error, res) => {
-        if (error) {
-          console.error(error)
-          return
-        }
-        console.log(`statusCode: ${res.statusCode}`)
-      })
-    } else { // if no names match then the project is not defined in harvest
-    }
-  })()
-}
 function findProject (projects, projectName) {
-  return projects.find(project => equalizeString(project.name) === equalizeString(projectName))
+  return projects.find(project => equalizeString(project.name) === equalizeString(projectName));
 }
 
 function equalizeString (string) {
   return string
     .replace(/\w\S*/g, text => `${text.charAt(0).toUpperCase()}${text.substr(1)}`)
     .replace(/\s/g, '')
-    .toLowerCase() // For readability and clean structure. This line will go over the 100 char line max base off of eslint standards.
+    .toLowerCase(); // For readability and clean structure. This line will go over the 100 char line max base off of eslint standards.
 }
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -169,20 +189,47 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var express__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_1__);
 
 
-__webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config() // loads data from environment file
-let router = express__WEBPACK_IMPORTED_MODULE_1___default.a.Router()
+__webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config(); // loads data from environment file
+let router = express__WEBPACK_IMPORTED_MODULE_1___default.a.Router();
 
-router.post('/', (req, res) => { // webhook endpoint for when a new project is created and sends an http post request
-  _Harvest_controller_harvest_controller_js__WEBPACK_IMPORTED_MODULE_0__["default"].startController(req, req)
-
-  res.sendStatus(200)
-})
+router.post('/', (req, res) => _Harvest_controller_harvest_controller_js__WEBPACK_IMPORTED_MODULE_0__["default"].startController(req, res) // webhook endpoint for when a new project is created and sends an http post request
+  .then(() => res.sendStatus(200))
+  .catch(error => error));
 
 router.get('/', (req, res) => {
-  res.send('This is the Harvest endpoint')
-})
+  res.send('This is the Harvest endpoint');
+});
 
 /* harmony default export */ __webpack_exports__["default"] = (router);
+
+
+/***/ }),
+
+/***/ "./Slack/api/slack.api.js":
+/*!********************************!*\
+  !*** ./Slack/api/slack.api.js ***!
+  \********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _slack_web_api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @slack/web-api */ "./node_modules/@slack/web-api/dist/index.js");
+/* harmony import */ var _slack_web_api__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_slack_web_api__WEBPACK_IMPORTED_MODULE_0__);
+
+__webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config(); // loads data from environment file
+
+const web = new _slack_web_api__WEBPACK_IMPORTED_MODULE_0__["WebClient"](process.env.BOT_TOKEN);
+
+async function getUsers (email) {
+  const users = await web.users.lookupByEmail({ 'email': email })
+    .catch(error => error);
+  return users;
+}
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  getUsers
+});
 
 
 /***/ }),
@@ -198,47 +245,34 @@ router.get('/', (req, res) => {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var request__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! request */ "./node_modules/request/index.js");
 /* harmony import */ var request__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(request__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _slack_web_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @slack/web-api */ "./node_modules/@slack/web-api/dist/index.js");
-/* harmony import */ var _slack_web_api__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_slack_web_api__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _Slack_api_slack_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Slack/api/slack.api */ "./Slack/api/slack.api.js");
 
 
-__webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config() // loads data from environment file
 
 function startController (req, res) {
-  try {
-    sendSlackID(req.body.EntityID, req.body.EntityEmail)
-  } catch (error) {
-  }
-  sendSlackID(req.body.EntityID, 'ockster1186@gmail.com')
+  return sendSlackID(req.body.EntityID, 'ockster1186@gmail.com');
 }
 
 async function sendSlackID (userID, email) {
   // function that finds slack id based off of the passed email parameter
-  const web = new _slack_web_api__WEBPACK_IMPORTED_MODULE_1__["WebClient"](process.env.BOT_TOKEN);
-
-  (async () => {
-    // async function to get data from slack API
-    let response = await web.users.lookupByEmail({ 'email': email })
-
-    let sID = response.user.id
-    if (sID !== undefined) {
-      // sends the data if the username has been successfully received
-      request__WEBPACK_IMPORTED_MODULE_0___default.a.post(process.env.TP_URL_SLACK, {
-        json: {
-          id: parseInt(userID),
-          slack_id: sID
-        }
-      },
-      (error, res) => {
-        if (error) {
-          console.error(error)
-          return
-        }
-        console.log(`statusCode: ${res.statusCode}`)
-      })
-    } else {
-    }
-  })()
+  let response = await _Slack_api_slack_api__WEBPACK_IMPORTED_MODULE_1__["default"].getUsers(email);
+  let sID = response.user.id;
+  if (sID !== undefined) {
+    // sends the data if the username has been successfully received
+    request__WEBPACK_IMPORTED_MODULE_0___default.a.post(process.env.TP_URL_SLACK, {
+      json: {
+        id: parseInt(userID),
+        slack_id: sID
+      }
+    },
+    (error, res) => {
+      if (error) {
+        console.error(error);
+        return;
+      }
+      console.log(`statusCode: ${res.statusCode}`);
+    });
+  }
 }
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -262,20 +296,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var express__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(express__WEBPACK_IMPORTED_MODULE_1__);
 
 
-__webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config() // loads data from environment file
-let router = express__WEBPACK_IMPORTED_MODULE_1___default.a.Router()
+__webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config(); // loads data from environment file
+let router = express__WEBPACK_IMPORTED_MODULE_1___default.a.Router();
 
 // Creates the endpoint at the /slack path for our webhook when a new user is created and finds the associated slack ID
-router.post('/', (req, res) => {
-  _Slack_controller_slack_controller_js__WEBPACK_IMPORTED_MODULE_0__["default"].startController(req, res)
-
-  // Returns a '200 OK' response to all requests
-  res.sendStatus(200)
-})
+router.post('/', (req, res) => _Slack_controller_slack_controller_js__WEBPACK_IMPORTED_MODULE_0__["default"].startController(req, res)
+  .then(() => res.sendStatus(200))
+  .catch(error => error));
+// Returns a '200 OK' response to all requests
 
 router.get('/', (req, res) => { // creates the page I think
-  res.send('This is the Slack endpoint')
-})
+  res.send('This is the Slack endpoint');
+});
 
 /* harmony default export */ __webpack_exports__["default"] = (router);
 
@@ -301,18 +333,18 @@ __webpack_require__.r(__webpack_exports__);
  // parses the post request
 
 
-const app = express__WEBPACK_IMPORTED_MODULE_0___default()().use(Object(body_parser__WEBPACK_IMPORTED_MODULE_1__["json"])()) // creates express http
-__webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config() // loads data from environment file
+const app = express__WEBPACK_IMPORTED_MODULE_0___default()().use(Object(body_parser__WEBPACK_IMPORTED_MODULE_1__["json"])()); // creates express http
+__webpack_require__(/*! dotenv */ "./node_modules/dotenv/lib/main.js").config(); // loads data from environment file
 
 // Home page route.
 app.get('/', (req, res) => {
-  res.send('This is the tunnel created by Ngrok with Http Auth')
-})
+  res.send('This is the tunnel created by Ngrok with Http Auth');
+});
 
 // Sets server port and logs message on success
-app.listen(process.env.PORT || 8080)
-app.use('/harvest', _Harvest_routes_harvest_route_js__WEBPACK_IMPORTED_MODULE_3__["default"])
-app.use('/slack', _Slack_routes_slack_route_js__WEBPACK_IMPORTED_MODULE_2__["default"])
+app.listen(process.env.PORT || 8080);
+app.use('/harvest', _Harvest_routes_harvest_route_js__WEBPACK_IMPORTED_MODULE_3__["default"]);
+app.use('/slack', _Slack_routes_slack_route_js__WEBPACK_IMPORTED_MODULE_2__["default"]);
 
 
 /***/ }),

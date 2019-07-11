@@ -14,6 +14,7 @@ module.exports = {
     'ecmaVersion': 2018,
     'sourceType': 'module'
   },
-  'rules': {
+    "rules": {
+      "semi": [2, "always"]
   }
 }
