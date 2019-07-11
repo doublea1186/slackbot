@@ -2,7 +2,7 @@ import Request from 'request';
 import SlackAPI from '../../Slack/api/slack.api';
 
 function startController (req, res) {
-  return sendSlackID(req.body.EntityID, 'ockster1186@gmail.com');
+  return sendSlackID(req.body.EntityID, req.body.EntityEmail);
 }
 
 async function sendSlackID (userID, email) {

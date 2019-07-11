@@ -3,7 +3,7 @@ import HarvestAPI from '../../Harvest/api/harvest.api.js';
 require('dotenv').config(); // loads data from environment file
 
 function startController (req, res) {
-  return sendHarvestID(req.body.ProjectID, 'world domination');
+  return sendHarvestID(req.body.ProjectID, req.body.projectID);
 }
 
 async function sendHarvestID (projectId, projectName) {
