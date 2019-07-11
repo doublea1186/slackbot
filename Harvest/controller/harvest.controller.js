@@ -3,7 +3,7 @@ import HarvestAPI from '../../Harvest/api/harvest.api.js';
 require('dotenv').config(); // loads data from environment file
 
 function startController (req, res) {
-  return sendHarvestID(req.body.ProjectID, req.body.projectID);
+  return sendHarvestID(req.body.ProjectID, req.body.projectName);
 }
 
 async function sendHarvestID (projectId, projectName) {
@@ -28,9 +28,7 @@ async function sendHarvestID (projectId, projectName) {
         return res;
       });
     }
-  } else {
-    return Promise.reject(new Error('no projects found'));
-  }
+  } return Promise.reject(new Error('no projects found'));
 }
 function findProject (projects, projectName) {
   return projects.find(project => equalizeString(project.name) === equalizeString(projectName));
