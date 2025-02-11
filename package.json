@@ -57,7 +57,7 @@
     "slack-node": "^0.1.8",
     "slackbots": "^1.2.0",
     "ts-loader": "^6.0.4",
-    "webpack": "^4.35.3",
+    "webpack": "^5.97.1",
     "webpack-cli": "^3.2.1",
     "webpack-dev-server": "^3.7.2"
   }
